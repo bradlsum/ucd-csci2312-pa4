@@ -343,7 +343,7 @@ The `Game` is **over** when there are _no more `Resource`-s_ left on the grid. N
 
 The default `Game::Game()` constructor creates a **3 x 3** grid.
 
-##### 6.5 `Piece` position randomization
+##### 6.5 `Game` population randomization
 
 To randomize the positions of the Piece-s during automatic population, you can use code like this:
 
@@ -369,7 +369,37 @@ while (numStrategic > 0) {
 // Note: you can reuse the generator
 ```
 
-##### 6.6 RTTI & `std::dynamic_cast`
+##### 6.6 `Agent` action randomization
+
+Often and `Agent` will have more than one `Piece` of the same type in its `Surroundings`, and will have to pick which one of them to go to. To randomize the actions of `Agent`-s during game play, use the `Game::randomPosition`. This function uses the functor `PositionRandomizer` defined in `Gaming.h`:
+
+```c++
+class PositionRandomizer {
+    std::default_random_engine __gen;
+    std::uniform_int_distribution<int> *__dist[10];
+
+public:
+    PositionRandomizer() {
+        for (int i = 0; i < 10; i++)
+            __dist[i] = new std::uniform_int_distribution<int>(0, i);
+    }
+
+    ~PositionRandomizer() {
+        for (int i = 0; i < 10; i++) delete __dist[i];
+    }
+
+    const Position operator()(const std::vector<int> &positionIndices) {
+        if (positionIndices.size() == 0) throw PosVectorEmptyEx();
+
+        int posIndex = (*__dist[positionIndices.size() - 1])(__gen);
+        return Position(
+                (unsigned) (positionIndices[posIndex] / 3),
+                (unsigned) (positionIndices[posIndex] % 3));
+    }
+};
+```
+
+##### 6.7 RTTI & `std::dynamic_cast`
 
 For the implementation of some functions, e.g. `Game::getNumSimple()`, you will need to know the runtime/dynamic derived type of an _upcast_ object (i.e. that is pointed to by a `Piece*` pointer). This is called _runtime type information (RTTI)_ and the following code illustrates the use of the C++ RTTI facility `std::dynamic_cast<>`:
 
@@ -381,8 +411,8 @@ unsigned int Game::getNumSimple() const {
     unsigned int numAgents = 0;
 
     for (auto it = __grid.begin(); it != __grid.end(); ++it) {
-        Agent *agent = dynamic_cast<Simple*>(*it);
-        if (agent) numAgents ++;
+        Simple *simple = dynamic_cast<Simple*>(*it);
+        if (simple) numAgents ++;
     }
 
     return numAgents;
@@ -391,7 +421,7 @@ unsigned int Game::getNumSimple() const {
 
 More on `dynamic_cast` in the [C++ Reference](http://en.cppreference.com/w/cpp/language/dynamic_cast).
 
-##### 6.7 `std::set`
+##### 6.8 `std::set`
 
 As mentioned above, `std::set` might be useful in the implementation of `Game::round()`. The following code contains a contrived example which you might find helpful:
 
@@ -459,13 +489,30 @@ _This section concerns future revisions of this assignment._
 
 1. (Section [6.3](https://github.com/ivogeorg/ucd-csci2312-pa4/blob/master/README.md#63-piece-viability-energy-capacity-aging-finishing)) `Piece::finish()` is called by any `Resource` which gets consumed or `Agent` which loses a challenge with another `Agent`. Specifically, it is called in the implementation of the double-dispatch `virtual` interaction operator `operator*()`. See next section for details on the operator. **TODO: This is a game rule, and therefore should be _pulled up_ to the abstract classes. The leaf classes should not be relied upon to implement the game rules faithfully. This will open the possibility for an open implementation of leaf classes by students and team tournaments.**
 
-2. Add tests for randomization in:
-  1. Automatic game population.
-  2. Gameplay.
-
-3. Add tests for rule enforcement in:
-  1. Actions.
-  2. Interaction.
-  3. Termination.
+2. Add tests for:
+  1. Randomization in:
+    1. Automatic game population.
+    2. Gameplay.
+  2. Rule enforcement in:
+    1. Actions.
+    2. Interaction.
+    3. Termination.
+  3. Fairness in:
+    1. Gameplay.
+  4. Exception throws.
   
-4. Consider alternative game termination conditions.
+3. Consider alternative game termination conditions.
+
+4. Explain forward class declarations used to avoid circular header includes.
+
+5. Remove inlines.
+
+6. Add instructions for printing the game, in particular:
+  1. The use of `std::stringstream` for dynamic stream formatting. See [this SO thread](http://stackoverflow.com/questions/1532640/which-iomanip-manipulators-are-sticky).
+  2. The use of `Piece::operator<<()` and `virtual Piece::print()`.
+
+7. Improve exception coverage.
+
+8. Write and generate Doxygen documentation.
+
+9. Elaborate on the turn taking and the methods (documentation).

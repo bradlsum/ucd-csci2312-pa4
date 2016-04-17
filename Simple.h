@@ -20,7 +20,7 @@ namespace Gaming {
 
         PieceType getType() const override { return PieceType::SIMPLE; }
 
-        void print(std::ostream &os) const override;
+        void print(std::ostream &out) const override;
 
         ActionType takeTurn(const Surroundings &s) const override;
 
