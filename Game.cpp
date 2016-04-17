@@ -3,6 +3,8 @@
 //
 
 #include <set>
+#include <sstream>
+#include <iomanip>
 #include "Game.h"
 #include "Simple.h"
 #include "Advantage.h"
@@ -486,22 +488,45 @@ void Game::play(bool verbose) {
     if (!verbose) operator<<(std::cout, *this);
     }
 
-std::ostream &operator<<(std::ostream &os, const Game &game) {
-    for(unsigned int i = 0; i < game.__width * game.__height; i++) {
-        if(game.__grid[i] == nullptr) {
-            os << "[     ]";
-        }
-        else {
-            os << "[" << *(game.__grid[i]) << "]";
+    std::ostream &operator<<(std::ostream &os, const Game &game) {
+
+        os << "Round " << game.__round << std::endl;
+
+        int column = 0;
+
+        for (auto it = game.__grid.begin(); it != game.__grid.end(); ++it) { if (*it == nullptr) { os << "[" << std::setw(6) << "]"; }
+
+            else {
+
+                std::stringstream ss;
+                ss << "[" << **it;
+                std::string str;
+                std::getline(ss, str);
+                os << str << "]";
+
+            }
+
+            if (++column == game.__width) { column = 0; os << std::endl; }
+
         }
 
-        if(i % game.__width == 0) {
-            os << std::endl;
+        os << "Status: ";
+
+        switch (game.getStatus()) {
+
+            case Game::Status::NOT_STARTED:
+                 break;
+
+            case Game::Status::PLAYING:
+                 break;
+
+            default:
+                 break;
+
         }
+
+        return os;
 
     }
-    os << "Status: " << game.getStatus() << std::endl;
 
-    return os;
-}
 }
