@@ -6,79 +6,80 @@
 #include "Agent.h"
 #include "Advantage.h"
 
-using namespace Gaming;
+namespace Gaming {
 
-const double Agent::AGENT_FATIGUE_RATE = 0.3;
+    const double Agent::AGENT_FATIGUE_RATE = 0.3;
 
-Agent::Agent(const Game &g, const Position &p, double energy) : Piece(g, p), __energy(energy){
+    Agent::Agent(const Game &g, const Position &p, double energy) : Piece(g, p), __energy(energy) {
 
-
-}
-
-Agent::~Agent(){}
-
-void Agent::age() {
-
-    __energy -= AGENT_FATIGUE_RATE;
-
-}
-
-Piece &Agent::operator*(Piece &other) {
-
-    Piece *p = &other;
-
-    Resource *res = dynamic_cast <Resource*> (p);
-
-    if (res) { interact(res); }
-    Agent *agent = dynamic_cast <Agent*> (p);
-
-    if (agent) { interact(agent); }
-
-    if (!isFinished()) {
-
-        Position OLD;
-        OLD = getPosition();
-
-        Position NEW;
-        NEW = other.getPosition();
-
-        other.setPosition(OLD);
-        setPosition(NEW);
 
     }
 
-    return *this;
+    Agent::~Agent() { }
 
-}
+    void Agent::age() {
 
-Piece &Agent::interact(Agent * target) {
+        __energy -= AGENT_FATIGUE_RATE;
 
-    if (__energy == target->__energy){
-        target->finish();
-
-        finish();
     }
 
-    else if (__energy < target->__energy){
-        target->__energy -= __energy;
+    Piece &Agent::operator*(Piece &other) {
 
-        finish();
+        Piece *p = &other;
+
+        Resource *res = dynamic_cast <Resource *> (p);
+
+        if (res) { interact(res); }
+        Agent *agent = dynamic_cast <Agent *> (p);
+
+        if (agent) { interact(agent); }
+
+        if (!isFinished()) {
+
+            Position OLD;
+            OLD = getPosition();
+
+            Position NEW;
+            NEW = other.getPosition();
+
+            other.setPosition(OLD);
+            setPosition(NEW);
+
+        }
+
+        return *this;
+
     }
-    else {
-        __energy -= target->__energy;
 
-        target->finish();
+    Piece &Agent::interact(Agent *target) {
+
+        if (__energy == target->__energy) {
+            target->finish();
+
+            finish();
+        }
+
+        else if (__energy < target->__energy) {
+            target->__energy -= __energy;
+
+            finish();
+        }
+        else {
+            __energy -= target->__energy;
+
+            target->finish();
+        }
+
+        return *this;
+
     }
 
-    return *this;
+    Piece &Agent::interact(Resource *target) {
 
-}
+        __energy += target->consume();
 
-Piece &Agent::interact(Resource * target) {
+        return *this;
 
-    __energy += target->consume();
-
-    return *this;
-
+    }
 }
 

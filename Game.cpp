@@ -82,17 +82,18 @@ Game::Game():__numInitAgents(0),__numInitResources(0),
              __status(NOT_STARTED), __verbose(false)
 {}
 
-Game::Game(unsigned int width, unsigned int height, bool manual):
-        __numInitAgents(0), __numInitResources(0), __grid(__width * __height, nullptr),
-        __round(0),__status(NOT_STARTED), __verbose(false)
-{
-    if(width < MIN_WIDTH || height < MIN_HEIGHT)
-        throw InsufficientDimensionsEx(MIN_WIDTH, MIN_HEIGHT, width, height);
-    __width = width;
-    __height = height;
-    __grid.resize(__width * __height, nullptr);
-    if(!(manual))   populate();
-}
+    Game::Game(unsigned width, unsigned height, bool manual) : __width(width), __height(height) { // note: manual population by default
+
+        if (width < MIN_WIDTH || height < MIN_HEIGHT) { throw InsufficientDimensionsEx(MIN_WIDTH, MIN_HEIGHT, width, height); }
+
+        __status = NOT_STARTED;
+        __verbose = false;
+        __round = 0;
+
+        for (unsigned i = 0; i < (__width * __height); ++i) { __grid.push_back(nullptr); }
+
+        if (!manual) { populate(); }
+    }
 
 Game::~Game(){
 
