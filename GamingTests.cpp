@@ -7,9 +7,7 @@
 #include <regex>
 
 #include "GamingTests.h"
-#include "ErrorContext.h"
 #include "Game.h"
-#include "Exceptions.h"
 #include "Simple.h"
 #include "Strategic.h"
 #include "Food.h"
@@ -92,7 +90,9 @@ void test_piece_print(ErrorContext &ec, unsigned int numRuns) {
             int id = 0;
             std::regex re("S[[:d:]]{1,}[ ]"); // ECMAScript, by default
             std::smatch m;
-            std::regex_search(ss.str(), m, re);
+            std::string search_str(ss.str()); // convert string to lvalue
+//            std::regex_search(ss.str(), m, re);
+            std::regex_search(search_str, m, re);
             if (m.size() != 1) { // parse problem
                 pass = false;
             } else {
@@ -1519,7 +1519,7 @@ void test_game_play(ErrorContext &ec, unsigned int numRuns) {
             g.addFood(2, 2);
             g.addAdvantage(1, 0);
 
-            g.play(false); // verbose = false, by default
+            g.play(true); // verbose = false, by default
 
             pass = (g.getNumResources() == 0) &&
                    (g.getNumAgents() == 2);

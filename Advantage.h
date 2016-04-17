@@ -21,7 +21,7 @@ namespace Gaming {
 
         PieceType getType() const override { return PieceType::ADVANTAGE; }
 
-        void print(std::ostream &out) const override;
+        void print(std::ostream &os) const override;
 
         double getCapacity() const override;
         double consume() override;

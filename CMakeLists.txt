@@ -1,37 +1,21 @@
 cmake_minimum_required(VERSION 3.3)
-project(ucd_csci2312_pa4)
+project(ucd-csci2312-pa4)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
-set(SOURCE_FILES
-    examples/virtual_operator.cpp
-    Advantage.cpp
-    Advantage.h
-    Agent.cpp
-    Agent.h
-    AggressiveAgentStrategy.cpp
-    AggressiveAgentStrategy.h
-    DefaultAgentStrategy.h
-    ErrorContext.cpp
-    ErrorContext.h
-    Exceptions.cpp
-    Exceptions.h
-    Food.cpp
-    Food.h
-    Game.cpp
-    Game.h
-    Gaming.h
-    GamingTests.cpp
-    GamingTests.h
-    main.cpp
-    Piece.cpp
-    Piece.h
-    Resource.cpp
-    Resource.h
-    Simple.cpp
-    Simple.h
-    Strategic.cpp
-    Strategic.h
-    Strategy.h DefaultAgentStrategy.cpp)
-
-add_executable(ucd_csci2312_pa4 ${SOURCE_FILES} DefaultAgentStrategy.cpp)
+set(SOURCE_FILES main.cpp
+        Game.cpp Game.h
+        Piece.cpp Piece.h
+        Agent.cpp Agent.h
+        Simple.cpp Simple.h
+        Strategic.cpp Strategic.h
+        Resource.cpp Resource.h
+        Food.cpp Food.h
+        Advantage.cpp Advantage.h
+        GamingTests.cpp GamingTests.h
+        ErrorContext.cpp ErrorContext.h
+        Exceptions.cpp Exceptions.h
+        Strategy.h
+        DefaultAgentStrategy.cpp DefaultAgentStrategy.h
+        Gaming.h AggressiveAgentStrategy.cpp AggressiveAgentStrategy.h)
+add_executable(ucd-csci2312-pa4 ${SOURCE_FILES})
