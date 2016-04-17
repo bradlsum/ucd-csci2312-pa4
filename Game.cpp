@@ -163,116 +163,115 @@ Game::~Game(){
     }
 
 // grid population methods
-void Game::addSimple(const Position &position){
+    void Game::addSimple(const Position &position) {
 
-    int i = position.y + (position.x * __width);
+        int i = position.y + (position.x * __width);
 
-    if (position.y >= __width || position.x >= __height) throw OutOfBoundsEx(__width, __height, position.x, position.y);
+        if (position.y >= __width || position.x >= __height) throw OutOfBoundsEx(__width, __height, position.x, position.y);
 
-    if (__grid[i]) throw PositionNonemptyEx(position.x, position.y);
+        if (__grid[i]) throw PositionNonemptyEx(position.x, position.y);
 
-    __grid[i] = new Simple(*this, position, STARTING_AGENT_ENERGY);
-
-}
-
-void Game::addSimple(const Position &position, double energy) { // used for testing only
-
-    int i = position.y + (position.x * __width);
-
-    if (position.y >= __width || position.x >= __height) throw OutOfBoundsEx(__width, __height, position.x, position.y);
-
-    if (__grid[i]) throw PositionNonemptyEx(position.x, position.y);
-
-    __grid[i] = new Simple(*this, position, energy);
-
-}
-
-void Game::addSimple(unsigned x, unsigned y){
-
-    int i = y + (x * __width);
-
-    if (y >= __width || x >= __height) throw OutOfBoundsEx(__width, __height, x, y);
-
-    if (__grid[i]) throw PositionNonemptyEx(x, y);
-
-    __grid[i] = new Simple(*this, Position(x, y), STARTING_AGENT_ENERGY);
-
-}
-
-void Game::addSimple(unsigned x, unsigned y, double energy){
-
-    int i = y + (x * __width);
-
-    if (y >= __width || x >= __height) throw OutOfBoundsEx(__width, __height, x, y);
-
-    if (__grid[i]) throw PositionNonemptyEx(x, y);
-
-    __grid[i] = new Simple(*this, Position(x, y), energy);
-
-}
-
-void Game::addStrategic(const Position &position, Strategy *s) {
-    if(position.y > __width || position.x > __height) {
-        throw OutOfBoundsEx(__width, __height, position.x, position.y);
+        __grid[i] = new Simple(*this, position, STARTING_AGENT_ENERGY);
     }
 
-    unsigned int temp = position.x * __width;
+    void Game::addSimple(const Position &position, double energy) { // used for testing only
 
-    __grid[temp + position.y] = new Strategic(*this, position, STARTING_AGENT_ENERGY, s);
-}
+        int i = position.y + (position.x * __width);
 
-void Game::addStrategic(unsigned x, unsigned y, Strategy *s) {
-    Position position(x, y);
-    addStrategic(position, s);
-}
+        if (position.y >= __width || position.x >= __height) throw OutOfBoundsEx(__width, __height, position.x, position.y);
 
-void Game::addFood(const Position &position){
+        if (__grid[i]) throw PositionNonemptyEx(position.x, position.y);
 
-    int i = position.y + (position.x * __width);
+        __grid[i] = new Simple(*this, position, energy);
+    }
 
-    if (position.y >= __width || position.x >= __height) throw OutOfBoundsEx(__width, __height, position.x, position.y);
+    void Game::addSimple(unsigned x, unsigned y) {
 
-    if (__grid[i]) throw PositionNonemptyEx(position.x, position.y);
+        int i = y + (x * __width);
 
-    __grid[i] = new Food(*this, position, STARTING_RESOURCE_CAPACITY);
+        if (y >= __width || x >= __height) throw OutOfBoundsEx(__width, __height, x, y);
 
-}
+        if (__grid[i]) throw PositionNonemptyEx(x, y);
 
-void Game::addFood(unsigned x, unsigned y){
+        __grid[i] = new Simple(*this, Position(x, y), STARTING_AGENT_ENERGY);
+    }
 
-    int i = y + (x * __width);
+    void Game::addSimple(unsigned y, unsigned x, double energy) {
 
-    if (y >= __width || x >= __height) throw OutOfBoundsEx(__width, __height, x, y);
+        int i = y + (x * __width);
 
-    if (__grid[i]) throw PositionNonemptyEx(x, y);
+        if (y >= __width || x >= __height) throw OutOfBoundsEx(__width, __height, x, y);
 
-    __grid[i] = new Food(*this, Position(x, y), STARTING_RESOURCE_CAPACITY);
+        if (__grid[i]) throw PositionNonemptyEx(x, y);
 
-}
+        __grid[i] = new Simple(*this, Position(x, y), energy);
+    }
 
-void Game::addAdvantage(const Position &position){
+    void Game::addStrategic(const Position &position, Strategy *s) {
 
-    int i = position.y + (position.x * __width);
+        int i = position.y + (position.x * __width);
 
-    if (position.y >= __width || position.x >= __height) throw OutOfBoundsEx(__width, __height, position.x, position.y);
+        if (position.y >= __width || position.x >= __height) throw OutOfBoundsEx(__width, __height, position.x, position.y);
 
-    if (__grid[i]) throw PositionNonemptyEx(position.x, position.y);
+        if (__grid[i]) throw PositionNonemptyEx(position.x, position.y);
 
-    __grid[i] = new Advantage(*this, position, STARTING_RESOURCE_CAPACITY);
+        __grid[i] = new Strategic(*this, position, STARTING_AGENT_ENERGY, s);
+    }
 
-}
+    void Game::addStrategic(unsigned x, unsigned y, Strategy *s) {
 
-void Game::addAdvantage(unsigned x, unsigned y){
+        int i = y + (x * __width);
 
-    int i = y + (x * __width);
+        if (y >= __width || x >= __height) throw OutOfBoundsEx(__width, __height, x, y);
 
-    if (y >= __width || x >= __height) throw OutOfBoundsEx(__width, __height, x, y);
+        if (__grid[i]) throw PositionNonemptyEx(x, y);
 
-    if (__grid[i]) throw PositionNonemptyEx(x, y);
+        __grid[i] = new Strategic(*this, Position(x, y), STARTING_AGENT_ENERGY, s);
+    }
 
-    __grid[i] = new Advantage(*this, Position(x, y), STARTING_RESOURCE_CAPACITY);
+    void Game::addFood(const Position &position) {
 
-}
+        int i = position.y + (position.x * __width);
+
+        if (position.y >= __width || position.x >= __height) throw OutOfBoundsEx(__width, __height, position.x, position.y);
+
+        if (__grid[i]) throw PositionNonemptyEx(position.x, position.y);
+
+        __grid[i] = new Food(*this, position, STARTING_RESOURCE_CAPACITY);
+    }
+
+    void Game::addFood(unsigned x, unsigned y) {
+
+        int i = y + (x * __width);
+
+        if (y >= __width || x >= __height) throw OutOfBoundsEx(__width, __height, x, y);
+
+        if (__grid[i]) throw PositionNonemptyEx(x, y);
+
+        __grid[i] = new Food(*this, Position(x, y), STARTING_RESOURCE_CAPACITY);
+    }
+
+    void Game::addAdvantage(const Position &position) {
+
+        int i = position.y + (position.x * __width);
+
+        if (position.y >= __width || position.x >= __height) throw OutOfBoundsEx(__width, __height, position.x, position.y);
+
+        if (__grid[i]) throw PositionNonemptyEx(position.x, position.y);
+
+        __grid[i] = new Advantage(*this, position, STARTING_RESOURCE_CAPACITY);
+    }
+
+    void Game::addAdvantage(unsigned x, unsigned y) {
+
+        int i = y + (x * __width);
+
+        if (y >= __width || x >= __height) throw OutOfBoundsEx(__width, __height, x, y);
+
+        if (__grid[i]) throw PositionNonemptyEx(x, y);
+
+        __grid[i] = new Advantage(*this, Position(x, y), STARTING_RESOURCE_CAPACITY);
+    }
 
 const Surroundings Game::getSurroundings(const Position &pos) const{
 
@@ -304,28 +303,43 @@ const Surroundings Game::getSurroundings(const Position &pos) const{
 }
 
 // gameplay methods
-const ActionType Game::reachSurroundings(const Position &from, const Position &to) {
+    const ActionType Game::reachSurroundings(const Position &from, const Position &to) { // note: STAY by default
 
-    if(from.x == to.x && from.y == to.y) { return STAY; }
+        int x;
+        int y;
 
-    if(from.x < to.x && from.y == to.y) { return W; }
+        x = to.x - from.x;
+        y = to.y - from.y;
 
-    if(from.x > to.x && from.y == to.y) { return E; }
+        x++;
+        y++;
 
-    if(from.x == to.x && from.y < to.y) { return S; }
+        unsigned int index = (y + (x * 3));
 
-    if(from.x == to.x && from.y > to.y) { return N; }
+        switch (index) {
 
-    if(from.x < to.x && from.y < to.y) { return SW; }
+            case 0: return NW;
 
-    if(from.x < to.x && from.y > to.y) { return NW; }
+            case 1: return N;
 
-    if(from.x > to.x && from.y < to.y) { return SE; }
+            case 2: return NE;
 
-    if(from.x > to.x && from.y > to.y) { return NE; }
+            case 3: return W;
 
-}
+            case 4: return STAY;
 
+            case 5: return E;
+
+            case 6: return SW;
+
+            case 7: return S;
+
+            case 8: return SE;
+
+            default: return STAY;
+
+        }
+    }
 bool Game::isLegal(const ActionType &ac, const Position &pos) const{
 
     int x, y;
@@ -473,7 +487,7 @@ void Game::play(bool verbose) {
     }
 
 std::ostream &operator<<(std::ostream &os, const Game &game) {
-    for(unsigned int i = 0; i < game.getWidth() * game.getHeight(); i++) {
+    for(unsigned int i = 0; i < game.__width * game.__height; i++) {
         if(game.__grid[i] == nullptr) {
             os << "[     ]";
         }
@@ -481,7 +495,7 @@ std::ostream &operator<<(std::ostream &os, const Game &game) {
             os << "[" << *(game.__grid[i]) << "]";
         }
 
-        if(i % game.getWidth() == 0) {
+        if(i % game.__width == 0) {
             os << std::endl;
         }
 
