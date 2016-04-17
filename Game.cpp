@@ -2,18 +2,14 @@
 // Created by Sumner B on 4/7/2016.
 //
 
-#include <iostream>
-#include "Game.h"
-#include "Strategic.h"
-#include "Food.h"
-#include "Advantage.h"
-#include "Simple.h"
-
-#include <sstream>
-#include <iomanip>
 #include <set>
+#include "Game.h"
+#include "Simple.h"
+#include "Advantage.h"
+#include "Food.h"
+#include "Strategic.h"
 
-using namespace Gaming;
+namespace  Gaming {
 
 
 const unsigned int Game::NUM_INIT_AGENT_FACTOR = 4;
@@ -81,39 +77,21 @@ void Game::populate(){
 
 }
 
-Game::Game() : __width(3), __height(3) {
+Game::Game():__numInitAgents(0),__numInitResources(0),
+             __width(MIN_WIDTH), __height(MIN_HEIGHT), __grid(__width * __height, nullptr), __round(0),
+             __status(NOT_STARTED), __verbose(false)
+{}
 
-    for (unsigned i = 0; i < (__width * __height); ++i) { __grid.push_back(nullptr); }
-
-    __round = 0;
-
-    __status = NOT_STARTED;
-
-    __verbose = false;
-
-}
-
-Game::Game(unsigned width, unsigned height, bool manual) : __width(width), __height(height) {
-
-    if (width < MIN_WIDTH || height < MIN_HEIGHT) {
+Game::Game(unsigned int width, unsigned int height, bool manual):
+        __numInitAgents(0), __numInitResources(0), __grid(__width * __height, nullptr),
+        __round(0),__status(NOT_STARTED), __verbose(false)
+{
+    if(width < MIN_WIDTH || height < MIN_HEIGHT)
         throw InsufficientDimensionsEx(MIN_WIDTH, MIN_HEIGHT, width, height);
-    }
-
-    __round = 0;
-
-    __status = NOT_STARTED;
-
-    __verbose = false;
-
-    for (unsigned i = 0; i < (__width * __height); ++i) { __grid.push_back(nullptr); }
-
-    if (!manual) { populate(); }
-
-}
-
-Game::Game(const Game &another){
-
-
+    __width = width;
+    __height = height;
+    __grid.resize(__width * __height, nullptr);
+    if(!(manual))   populate();
 }
 
 Game::~Game(){
@@ -232,28 +210,19 @@ void Game::addSimple(unsigned x, unsigned y, double energy){
 
 }
 
-void Game::addStrategic(const Position &position, Strategy *s = new DefaultAgentStrategy()){
+void Game::addStrategic(const Position &position, Strategy *s) {
+    if(position.y > __width || position.x > __height) {
+        throw OutOfBoundsEx(__width, __height, position.x, position.y);
+    }
 
-    int i = position.y + (position.x * __width);
+    unsigned int temp = position.x * __width;
 
-    if (position.y >= __width || position.x >= __height) throw OutOfBoundsEx(__width, __height, position.x, position.y);
-
-    if (__grid[i]) throw PositionNonemptyEx(position.x, position.y);
-
-    __grid[i] = new Strategic(*this, position, STARTING_AGENT_ENERGY, s);
-
+    __grid[temp + position.y] = new Strategic(*this, position, STARTING_AGENT_ENERGY, s);
 }
 
-void Game::addStrategic(unsigned x, unsigned y, Strategy *s = new DefaultAgentStrategy()){
-
-    int i = y + (x * __width);
-
-    if (y >= __width || x >= __height) throw OutOfBoundsEx(__width, __height, x, y);
-
-    if (__grid[i]) throw PositionNonemptyEx(x, y);
-
-    __grid[i] = new Strategic(*this, Position(x, y), STARTING_AGENT_ENERGY, s);
-
+void Game::addStrategic(unsigned x, unsigned y, Strategy *s) {
+    Position position(x, y);
+    addStrategic(position, s);
 }
 
 void Game::addFood(const Position &position){
@@ -334,41 +303,25 @@ const Surroundings Game::getSurroundings(const Position &pos) const{
 }
 
 // gameplay methods
-static const ActionType Game::reachSurroundings(const Position &from, const Position &to){ // note: STAY by default
+const ActionType Game::reachSurroundings(const Position &from, const Position &to) {
 
-    unsigned int x;
-    unsigned int y;
+    if(from.x == to.x && from.y == to.y) { return STAY; }
 
-    y = to.y - from.y;
+    if(from.x < to.x && from.y == to.y) { return W; }
 
-    x = to.x - from.x;
+    if(from.x > to.x && from.y == to.y) { return E; }
 
-    y++;
-    x++;
+    if(from.x == to.x && from.y < to.y) { return S; }
 
-    unsigned int i = (y + (x * 3));
+    if(from.x == to.x && from.y > to.y) { return N; }
 
+    if(from.x < to.x && from.y < to.y) { return SW; }
 
-        if (i == 0) return NW;
+    if(from.x < to.x && from.y > to.y) { return NW; }
 
-        else if (i == 1) return N;
+    if(from.x > to.x && from.y < to.y) { return SE; }
 
-        else if (i == 2) return NE;
-
-        else if (i == 3) return W;
-
-        else if (i == 4) return STAY;
-
-        else if (i == 5) return E;
-
-        else if (i == 6) return SW;
-
-        else if (i == 7) return S;
-
-        else if (i == 8) return SE;
-
-        else return STAY;
-
+    if(from.x > to.x && from.y > to.y) { return NE; }
 
 }
 
@@ -507,51 +460,33 @@ void Game::round() {   // play a single round
 
 }
 
-void Game::play(bool verbose = false) {    // play game until over
-
+void Game::play(bool verbose) {
     __verbose = verbose;
-
     __status = PLAYING;
-
-    std::cout << *this;
-
-    while (__status != OVER) { round(); if (verbose) std::cout << *this; }
-
-    if (!verbose) std::cout << *this;
-
-}
-
-friend std::ostream &operator<<(std::ostream &os, const Game &game){
-
-    os << "Round " << game.__round << std::endl;
-
-    int C = 0;
-
-    for (auto it = game.__grid.begin(); it != game.__grid.end(); ++it) {
-
-        if (*it == nullptr) { os << "[" << std::setw(6) << "]"; }
-
-        else { std::stringstream ss; ss << "[" << **it; std::string str; std::getline(ss, str); os << str << "]"; }
-
-        if (++C == game.__width) { C = 0; os << std::endl; }
-
+    operator<<(std::cout, *this);
+    while (__status != OVER) {
+        round();
+        if (verbose) operator<<(std::cout, *this);
+    }
+    if (!verbose) operator<<(std::cout, *this);
     }
 
-    os << "Status: ";
+std::ostream &operator<<(std::ostream &os, const Game &game) {
+    for(unsigned int i = 0; i < game.getWidth() * game.getHeight(); i++) {
+        if(game.__grid[i] == nullptr) {
+            os << "[     ]";
+        }
+        else {
+            os << "[" << *(game.__grid[i]) << "]";
+        }
 
-    switch (game.getStatus()) {
-
-        case Game::Status::NOT_STARTED:
-            std::cout << "Not Started..." << std::endl; break;
-
-        case Game::Status::PLAYING:
-            std::cout << "Playing..." << std::endl; break;
-
-        default:
-            std::cout << "Over!" << std::endl; break;
+        if(i % game.getWidth() == 0) {
+            os << std::endl;
+        }
 
     }
+    os << "Status: " << game.getStatus() << std::endl;
 
     return os;
-
+}
 }

@@ -17,13 +17,13 @@ Agent::Agent(const Game &g, const Position &p, double energy) : Piece(g, p), __e
 
 Agent::~Agent(){}
 
-void Agent::age() override final{
+void Agent::age() {
 
     __energy -= AGENT_FATIGUE_RATE;
 
 }
 
-Piece &Agent::operator*(Piece &other) override final{
+Piece &Agent::operator*(Piece &other) {
 
     Piece *p = &other;
 
@@ -51,7 +51,7 @@ Piece &Agent::operator*(Piece &other) override final{
 
 }
 
-Piece &Agent::interact(Agent * target) override final{
+Piece &Agent::interact(Agent * target) {
 
     if (__energy == target->__energy){
         target->finish();
@@ -74,7 +74,7 @@ Piece &Agent::interact(Agent * target) override final{
 
 }
 
-Piece &Agent::interact(Resource * target) override final{
+Piece &Agent::interact(Resource * target) {
 
     __energy += target->consume();
 

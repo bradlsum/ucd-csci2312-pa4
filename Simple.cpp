@@ -33,33 +33,62 @@ void Simple::print(std::ostream &out) const {
 }
 
 ActionType Simple::takeTurn(const Surroundings &s) const {
-    std::vector <int> tiles;
 
-    for (int i = 0; i < 9; ++i) {
-        if (s.array[i] == PieceType::ADVANTAGE || s.array[i] == PieceType::FOOD) tiles.push_back(i);
+    ActionType ac = STAY;
+
+    std::vector<int> positions;
+    for(int i = 0; i < 9; i++) {
+        if(s.array[i] == ADVANTAGE || s.array[i] == FOOD) {
+            positions.push_back(i);
+        }
     }
 
-    if (tiles.size() > 0) {
-        std::cout << "Position Resource Options: " << tiles.size() << std::endl;
+    if(positions.size() == 0) {
 
-        PositionRandomizer rand;
-        Position pos = rand (tiles);
+        for(int i = 0; i < 9; i++) { if(s.array[i] == EMPTY) { positions.push_back(i); }}
 
-        return (ActionType)(pos.y + (pos.x * 3));
+        if(positions.size() == 0) { positions.push_back(100000); }
+
     }
 
-    for (int i = 0; i < 9; ++i) { if (s.array[i] == PieceType::EMPTY) tiles.push_back(i); }
+    int push = rand() % positions.size();
 
-    if (tiles.size() > 0) {
-        std::cout << "Position Empty Options: " << tiles.size() << std::endl;
+    if(positions.size() == 1) { push = 0; }
 
-        PositionRandomizer rand();
-        Position pos = rand(tiles);
+    if(push >= 9) { push = 8; }
 
-        std::cout << "Position Chosen: " << pos.y + (pos.x * 3) << std::endl;
-        return (ActionType)(pos.y + (pos.x * 3));
+    switch (positions[push]) {
+        case 0:
+            ac = NW;
+            break;
+        case 1:
+            ac = N;
+            break;
+        case 2:
+            ac = NE;
+            break;
+        case 3:
+            ac = W;
+            break;
+        case 4:
+            ac = STAY;
+            break;
+        case 5:
+            ac = E;
+            break;
+        case 6:
+            ac = SW;
+            break;
+        case 7:
+            ac = S;
+            break;
+        case 8:
+            ac = SE;
+            break;
+        default:
+            ac = STAY;
+            break;
     }
-
-    return ActionType::STAY;
+    return ac;
 }
 

@@ -34,6 +34,7 @@ namespace Gaming {
         unsigned __numInitAgents, __numInitResources;
 
         unsigned __width, __height;
+
         std::vector<Piece *> __grid; // if a position is empty, nullptr
 
         unsigned int __round;
@@ -43,6 +44,7 @@ namespace Gaming {
         bool __verbose;
 
     public:
+
         static const unsigned MIN_WIDTH, MIN_HEIGHT;
         static const double STARTING_AGENT_ENERGY;
         static const double STARTING_RESOURCE_CAPACITY;

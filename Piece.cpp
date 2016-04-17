@@ -2,31 +2,30 @@
 // Created by Sumner B on 4/5/2016.
 //
 
+#include <sstream>
 #include "Piece.h"
 
-using namespace Gaming;
+#include <sstream>
+#include "Piece.h"
 
-unsigned int Piece::__idGen = 1000;
+namespace Gaming {
 
-Piece::Piece(const Game &g, const Position &p): __game(g), __position(p){
+    unsigned int Piece::__idGen = 1000;
 
-    __id = __idGen++;
+    Piece::Piece(const Game &g, const Position &p) : __game(g), __position(p) {
+        __finished = false;
+        __turned = false;
+        __id = __idGen++;
+    }
 
-    __turned = false;
+    Piece::~Piece() {
 
-    __finished = false;
+    }
 
+    std::ostream &operator<<(std::ostream &os, const Piece &piece) {
+        piece.print(os);
+        return os;
+    }
 }
-
-Piece::~Piece() {}
-
-std::ostream &operator<<(std::ostream &os, const Piece &piece) {
-
-    piece.print(os);
-
-    return os;
-
-}
-
 
 
